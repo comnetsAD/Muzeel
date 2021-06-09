@@ -1,0 +1,7 @@
+[{"event": "baseEvent", "xpath": "/html/body"}]
+[{"event": "baseEvent", "xpath": "/html/body"}, {"event": "click", "xpath": "(//button[@id='toggle'])[1]"}]
+[{"event": "baseEvent", "xpath": "/html/body"}, {"event": "keyup", "xpath": "/html/body"}]
+[{"event": "baseEvent", "xpath": "/html/body"}, {"event": "mousedown", "xpath": "/html/body"}]
+[{"event": "baseEvent", "xpath": "/html/body"}, {"event": "mousedown", "xpath": "/html/body"}]
+[{"event": "baseEvent", "xpath": "/html/body"}, {"event": "keydown", "xpath": "/html/body"}]
+[{"event": "baseEvent", "xpath": "/html/body"}, {"event": "click", "xpath": "(//button[@id='toggle'])[1]"}, {"event": "click", "xpath": "(//nav[@id='mobile-menu'])[1]"}]

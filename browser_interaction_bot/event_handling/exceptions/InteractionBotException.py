@@ -1,0 +1,2 @@
+class InteractionBotException(Exception):
+    pass
