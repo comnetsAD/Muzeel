@@ -26,6 +26,11 @@ class HTMLDocumentUtil:
                 tag_name = child.name
 
                 if tag_name not in ["link", "script", "style", "svg", "img", "noscript"]:
+                    
+                    if tag_name == "a" and "href" in child.attrs:
+                        if not child["href"].startswith("#"):
+                            continue
+                    
                     curr_tag_index = child_map.get(tag_name, 0) + 1
                     child_map[tag_name] = curr_tag_index
 

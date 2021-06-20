@@ -1,16 +1,24 @@
 from selenium.webdriver import Chrome
 from selenium.common.exceptions import NoSuchWindowException, UnexpectedAlertPresentException
 from time import sleep
+import psutil
 
 
 class BrowserInteractions:
     @classmethod
-    def open_page(cls, browser: Chrome, url: str):
+    def open_page(cls, browser: Chrome, url: str, retry_count: int = 0):
         try:
             browser.get(url)
             cls.wait_for_page_load(browser)
         except UnexpectedAlertPresentException:
             pass
+        except Exception as e:
+            if retry_count < 5:
+                print("Retrying page load, error occurred", e)
+                cls.wait(3)
+                return cls.open_page(browser, url, retry_count+1)
+            else:
+                raise e
         return browser.current_url
 
     @classmethod

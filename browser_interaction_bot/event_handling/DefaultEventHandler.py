@@ -11,10 +11,12 @@ from .BrowserInteractions import BrowserInteractions
 class DefaultEventHandler(EventHandler):
     def __try_double_click(self, base_url, element):
         try:
+            BrowserInteractions.close_extraneous_tabs(self.browser, 1)
             click_cnt = 0
             while self.browser.current_url == base_url and click_cnt < 2:
                 ActionChains(self.browser).move_to_element(element).click(element).perform()
                 click_cnt += 1
+                BrowserInteractions.close_extraneous_tabs(self.browser, 1)
         except:
             pass
 
@@ -55,6 +57,7 @@ class DefaultEventHandler(EventHandler):
         except (MoveTargetOutOfBoundsException, JavascriptException):
             pass
         except Exception:
+            BrowserInteractions.close_extraneous_tabs(self.browser, 1)
             raise InteractionBotException from None
         finally:
             BrowserInteractions.close_extraneous_tabs(self.browser, 1)

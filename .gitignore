@@ -1,0 +1,7 @@
+completed_sites_*
+error_log*
+*.csv
+*.pdf
+fix_error_log.py
+fixed_error_log
+/outputs

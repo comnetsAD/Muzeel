@@ -17,6 +17,7 @@ class DataStore:
             host=db_details.get("host", "localhost"),
             user=db_details.get("user", "root"),
             password=db_details.get("password", ""),
+            port=db_details.get("port", 3306),
             database=self.db,
         )
 
@@ -56,8 +57,12 @@ class DataStore:
 
             script_content = self.data_map[request_url]["original"]
             self.function_id_map[request_url] = set()
-            esprima.parseModule(script_content, {"range": True, "tolerant": True}, esprima_delegate)
+            try:
+                esprima.parseModule(script_content, {"range": True, "tolerant": True}, esprima_delegate)
+            except:
+                pass
             self.__add_log_statements_to_update_file(request_url, function_start_end_positions)
+
 
     def __add_log_statements_to_update_file(self, request_url: str, function_start_end_positions: list) -> None:
         function_start_end_positions.sort()
@@ -85,7 +90,7 @@ class DataStore:
     def persist_updated_files(self):
         for request_url in self.data_map:
             content_file_path = self.request_url_content_file_map[request_url]
-            update_file_path = content_file_path.split(".c")[0] + ".u"
+            update_file_path = content_file_path.split(".c")[0] + ".m"
             with open(self.cache_directory + "/" + update_file_path, "w") as update_file:
                 update_file.write(self.data_map[request_url]["updated"])
 
