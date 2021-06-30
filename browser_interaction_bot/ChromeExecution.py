@@ -129,13 +129,6 @@ class ChromeExecution:
         self.event_handler.set_browser(self.browser)
         self.child_processes = self.determine_child_processes(self.browser.service.process.pid)
 
-    def __close_browser(self):
-        try:
-            self.browser.close()
-            self.browser.quit()
-        except:
-            pass
-
     def remove_chrome_data(self):
         try:
             rmtree(self.output_file_directory+"/chrome_data")
