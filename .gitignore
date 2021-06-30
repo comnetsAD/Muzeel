@@ -4,4 +4,7 @@ error_log*
 *.pdf
 fix_error_log.py
 fixed_error_log
-/outputs
+/outputs*
+/site_lists*
+/*results*
+faulty_but_workable

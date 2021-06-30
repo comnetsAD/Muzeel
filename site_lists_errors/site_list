@@ -35,8 +35,6 @@ https://www.cisco.com/, Line 1: Unexpected token :
 https://slate.com/, Line 1: Unexpected token :
 https://www.constantcontact.com/global/home-page, HTTPConnectionPool(host='127.0.0.1', port=53205): Max retries exceeded with url: /session/e04c5e5cd695091bdb9a0a1fea6b4933/window/handles (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7f456e5d02b0>: Failed to establish a new connection: [Errno 111] Connection refused'))
 https://umich.edu/, Message: timeout: Timed out receiving message from renderer: 299.933
-  (Session info: headless chrome=90.0.4430.93)
-
 https://www.ebay.de/, 
 https://www.espn.com/, Line 1: Unexpected token :
 https://www.fastcompany.com/, ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
@@ -56,8 +54,6 @@ https://www.broadcom.com/products/cyber-security, Line 1: Unexpected token :
 https://www.cbsnews.com/, 'utf-8' codec can't decode byte 0x80 in position 77408: invalid start byte
 https://www.mercari.com/, ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
 https://steamcommunity.com/, Message: timeout: Timed out receiving message from renderer: 295.609
-  (Session info: headless chrome=90.0.4430.93)
-
 https://www.minecraft.net/en-us/marketplace, ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
 https://www.cint.com/, 
 https://www.coingecko.com/hu, ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
@@ -85,14 +81,9 @@ https://www.verizon.com/, Line 1: Unexpected token :
 https://www.xfinity.com/, ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
 https://www.zillow.com/profile/Sky499/, ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
 https://zoom.us/, ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
-, Message: invalid argument
-  (Session info: headless chrome=90.0.4430.93)
-
 https://www.autodesk.com/, Line 1: Unexpected token :
 https://www.jstor.org/, 
 https://www.linkedin.com/, Message: timeout: Timed out receiving message from renderer: -0.002
-  (Session info: headless chrome=90.0.4430.93)
-
 https://www.medicalnewstoday.com/, Line 1: Unexpected token {
 https://www.mytheresa.com/euro_en/, ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
 https://www.nexusmods.com/civilisationvi, Line 2841: Use of future reserved word in strict mode
@@ -110,8 +101,6 @@ https://www.uol.com.br/, ('Connection aborted.', RemoteDisconnected('Remote end 
 https://www.businesswire.com/portal/site/home/, 
 https://www.verisign.com/, HTTPConnectionPool(host='127.0.0.1', port=49201): Max retries exceeded with url: /session/3eb96174b72319d5803efe45ddbac929/window/handles (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7f95659f31c0>: Failed to establish a new connection: [Errno 111] Connection refused'))
 https://www.wikihow.com/Knit, HTTPConnectionPool(host='127.0.0.1', port=41157): Max retries exceeded with url: /session/98a7c2f71ff5ffe707f0798fdb3cd673/window/handles (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7f9589ba82b0>: Failed to establish a new connection: [Errno 111] Connection refused'))
-, Message: invalid argument
-  (Session info: headless chrome=90.0.4430.93)
 https://www.urbandictionary.com/define.php, Line 1: Unexpected token :
 https://www.coursehero.com/, Line 1: Unexpected token :
 https://www.espn.in/, Line 1: Unexpected token :
@@ -130,25 +119,14 @@ https://www.grid.id/, ('Connection aborted.', RemoteDisconnected('Remote end clo
 https://www.okezone.com/, ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
 https://www.dcard.tw/f, ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
 https://www.sarkariresult.com/page/uppclgroupc2017.php, ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
-, Message: invalid argument
-  (Session info: headless chrome=90.0.4430.93)
-
 https://www.livescience.com/, ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
 https://www.tripadvisor.com/, 
 https://www.nginx.com/, Message: timeout: Timed out receiving message from renderer: 299.266
-  (Session info: headless chrome=90.0.4430.93)
-
 https://www.intuit.com/, Line 1: Unexpected token :
 https://www.outbrain.com/, Line 1: Unexpected token :
 https://www.fastly.com/, 
-, Message: invalid argument
-  (Session info: headless chrome=90.0.4430.93)
-
 https://www.narcity.com/en-ca/travel, HTTPConnectionPool(host='127.0.0.1', port=46491): Max retries exceeded with url: /session/0e8d3133fe7aa5da86eb0b17ca883823/window/handles (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7f2265c310a0>: Failed to establish a new connection: [Errno 111] Connection refused'))
 https://www.dreamstime.com/terms, ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
-, Message: invalid argument
-  (Session info: headless chrome=90.0.4430.93)
-
 https://aciresnippets.wordpress.com/contribute/, Line 1: Unexpected token :
 https://blog.blackboard.com/, Line 1: Unexpected token :
 https://edition.cnn.com/, Line 1: Unexpected token :
@@ -157,8 +135,6 @@ https://economicgraph.linkedin.com/,
 https://corp.roblox.com/, 
 https://m.facebook.com/nt/screen/, Line 1: Unexpected token :
 https://dribbble.com/, Message: timeout: Timed out receiving message from renderer: 299.037
-  (Session info: headless chrome=90.0.4430.93)
-
 https://hr.sandia.gov/, 
 https://m.facebook.com/login.php, Line 1: Unexpected token :
 https://m.youtube.com/channel/UC-6OW5aJYBFM33zXQlBKPNA, ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
@@ -167,9 +143,6 @@ https://newrelic.com/, ('Connection aborted.', RemoteDisconnected('Remote end cl
 https://patents.google.com/patent/US3924541, ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
 https://press.hp.com/us/en.html, Line 1: Unexpected token :
 https://rank.ojooo.com/, Message: unknown error: Chrome failed to start: exited abnormally.
-  (unknown error: DevToolsActivePort file doesn't exist)
-  (The process started from chrome location /usr/bin/google-chrome is no longer running, so ChromeDriver is assuming that Chrome has crashed.)
-
 https://shop.bbc.com/, Line 10: Unexpected token {
 https://m.youtube.com/, ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
 https://medium.com/@xavierbriand, Line 1: Unexpected token {
@@ -186,8 +159,6 @@ https://www.bloomberg.com/middleeast, ('Connection aborted.', RemoteDisconnected
 https://time.com/, Line 1: Unexpected token :
 https://variety.com/, Line 1: Unexpected token :
 https://www.afternic.com/, Message: timeout: Timed out receiving message from renderer: 299.921
-  (Session info: headless chrome=90.0.4430.93)
-
 https://www.artstation.com/sciamano240, ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
 https://www.capitalone.com/, Line 1: Unexpected token :
 https://m.facebook.com/pietroimaria, Line 1: Unexpected token :
@@ -256,36 +227,21 @@ https://www.salesforce.com/research/, Line 1: Unexpected token :
 https://www.pinterest2.jp/helloimdrivinga/, Line 302: Unexpected token *
 https://www.redhat.com/en, Line 1: Unexpected token :
 https://www.zara.com/, Line 1: Unexpected token :
-, Message: invalid argument
-  (Session info: headless chrome=90.0.4430.93)
-
 https://www.mckinsey.com/, 
 https://www.ted.com/, Line 1: Unexpected token {
 https://www.statista.com/, Line 1: Unexpected token :
 https://www.worldometers.info/cars/, ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
 https://www.openstreetmap.org/, Alert Text: Geolocation error: User denied Geolocation.
-Message: unexpected alert open: {Alert text : Geolocation error: User denied Geolocation.}
-  (Session info: headless chrome=90.0.4430.93)
-
 https://www.nvidia.com/en-me/geforce/, ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
 https://www.udemy.com/, ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
 https://www.paypal.com/ae/home, Message: timeout: Timed out receiving message from renderer: 299.615
-  (Session info: headless chrome=90.0.4430.93)
-
 https://www.setn.com/m/, ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
 https://www.telegraph.co.uk/, Line 1: Unexpected token :
 https://www.whitehouse.gov/, 
 https://www.mheducation.com/, Message: timeout: Timed out receiving message from renderer: 298.746
-  (Session info: headless chrome=90.0.4430.93)
-
-, Message: invalid argument
-  (Session info: headless chrome=90.0.4430.93)
-
 https://www.news18.com/topics/keshubhai-patel/, HTTPConnectionPool(host='127.0.0.1', port=34397): Max retries exceeded with url: /session/11a308f4c6e94bd55ff0951944e04cc6/url (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7fdca023ae50>: Failed to establish a new connection: [Errno 111] Connection refused'))
 https://www.usps.com/, ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
 https://www.worldometers.info/, ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
 https://www.samsclub.com/, Line 1: Unexpected token :
 https://www.msn.com/en-ae/, HTTPConnectionPool(host='127.0.0.1', port=48471): Max retries exceeded with url: /session/3d60c9309d8cc78a1f9747ae82d525ac/window/handles (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7fdc9a480ca0>: Failed to establish a new connection: [Errno 111] Connection refused'))
-, Message: invalid argument
-  (Session info: headless chrome=90.0.4430.93)
 

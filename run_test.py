@@ -14,20 +14,21 @@ db_details = {
 }
 
 site_list = sys.argv[1]
-error_log = open("error_log_retried", "a")
-completed_sites = open("completed_sites_errors_"+site_list, "a")
+proxy_port = sys.argv[2]
+error_log = open("new_results/error_log", "a")
+completed_sites = open("new_results/completed_sites_errors_"+site_list, "a")
 
 
-with open("site_lists_errors/"+site_list, "r") as site_list_file:
+with open("site_lists_new/"+site_list, "r") as site_list_file:
     sites = site_list_file.read().split("\n")
 
     for site in sites:
         print("Running", site)
         
         try:
-            output_file_directory = "outputs/" + site.replace("/","_")
+            output_file_directory = "outputs_jsanalyzer/" + site.replace("/","_")
             start = time.time()
-            execute(site, db_details, proxy_url="127.0.0.1:9345", output_file_directory=output_file_directory)
+            execute(site, db_details, proxy_url="127.0.0.1:{}".format(proxy_port), output_file_directory=output_file_directory)
             end = time.time()
             completed_sites.write("{}, {}\n".format(site, end-start))
             completed_sites.flush()

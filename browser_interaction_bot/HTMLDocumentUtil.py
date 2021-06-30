@@ -14,11 +14,12 @@ class HTMLDocumentUtil:
         self.dfs(self.doc.find_all("body")[0], "/html/body")
 
     def dfs(self, root: Tag, xpath: str) -> None:
-        listeners = self.get_event_listeners_by_xpath(xpath)
+        if xpath != "/html/body":
+            listeners = self.get_event_listeners_by_xpath(xpath)
 
-        for listener in listeners:
-            event = Event(listener['type'], xpath)
-            self.event_list.append(event)
+            for listener in listeners:
+                event = Event(listener['type'], xpath)
+                self.event_list.append(event)
 
         child_map = {}
         for child in root.contents:
@@ -28,7 +29,7 @@ class HTMLDocumentUtil:
                 if tag_name not in ["link", "script", "style", "svg", "img", "noscript"]:
                     
                     if tag_name == "a" and "href" in child.attrs:
-                        if not child["href"].startswith("#"):
+                        if not (child['href'].strip() == "" or child["href"].startswith("#") or child["href"].startswith("/#")):
                             continue
                     
                     curr_tag_index = child_map.get(tag_name, 0) + 1

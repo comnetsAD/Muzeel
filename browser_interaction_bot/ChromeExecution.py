@@ -107,7 +107,7 @@ class ChromeExecution:
         except:
             pass
     
-    def open_page(self, url) -> None:
+    def open_page(self, url) -> str:
         try:
             return BrowserInteractions.open_page(self.browser, self.url)
         except:
@@ -129,6 +129,19 @@ class ChromeExecution:
         self.event_handler.set_browser(self.browser)
         self.child_processes = self.determine_child_processes(self.browser.service.process.pid)
 
+    def __close_browser(self):
+        try:
+            self.browser.close()
+            self.browser.quit()
+        except:
+            pass
+
+    def remove_chrome_data(self):
+        try:
+            rmtree(self.output_file_directory+"/chrome_data")
+        except:
+            pass
+
     def close_tools(self) -> None:
         self.close_browser()
         self.force_close_process()
@@ -137,11 +150,11 @@ class ChromeExecution:
         self.trace_file.close()
 
     def persist_state(self, event_queue, event_list) -> None:
-        with open(self.output_file_directory+"/event_queue") as event_queue_file:
-            event_queue_file.write(dumps(list(event_queue)))
+        with open(self.output_file_directory+"/event_queue.json", "w") as event_queue_file:
+            event_queue_file.write(dumps([event.serialize_full_event_trace() for event in event_queue]))
         
-        with open(self.output_file_directory+"/event_list") as event_list_file:
-            event_list_file.write(dumps(event_list))
+        with open(self.output_file_directory+"/event_list.json", "w") as event_list_file:
+            event_list_file.write(dumps([event.serialize_event() for event in event_list]))
 
     def execute(self) -> Event:
         self.url = self.open_page(self.url)
@@ -190,7 +203,7 @@ class ChromeExecution:
                 finally:
                     i -= 1
                     if time.time() - self.start_time > 3600:
-                        self.persist_state(event_queue, event_list)
+                        self.persist_state([parent_event] + list(event_queue), event_list)
                         raise Exception("Timeout")
 
             if not has_child:
@@ -203,8 +216,3 @@ class ChromeExecution:
         print("Complete")
         self.close_tools()
         return base_event
-
-
-
-
-

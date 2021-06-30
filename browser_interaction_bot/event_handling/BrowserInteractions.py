@@ -6,7 +6,7 @@ import psutil
 
 class BrowserInteractions:
     @classmethod
-    def open_page(cls, browser: Chrome, url: str, retry_count: int = 0):
+    def open_page(cls, browser: Chrome, url: str, retry_count: int = 0) -> str:
         try:
             browser.get(url)
             cls.wait_for_page_load(browser)
