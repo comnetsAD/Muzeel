@@ -55,28 +55,16 @@ class ReadProxy:
 
         # return miss if not cache hit
         if not sql_response:
-            print ("--------- CACHE MISS {} -----------".format(requestUrl), "jquery" in requestUrl)
+            print ("--------- CACHE MISS {} -----------".format(requestUrl))
             # flow.response = http.HTTPResponse.make (200,"",{"Content-Type": "text/html"})
             # flow.initiatingUrl = False
             return
         else:
             print ("--------- CACHE HIT {} -----------".format(requestUrl))
-            temp_content = None
-            if sql_response[1] != None:
-                file_name = sql_response[1].split("/")[1]
-                muzeel_file_name = file_name.split(".u")[0]+".m" # you can't parse the js, so you don't reate the .m file
-                try:
-                    with open(ctx.options.cacheDirectory + "/data_muzeel_new/" + muzeel_file_name, 'rb') as temp_file:
-                        temp_content = temp_file.read()
-                        temp_file.close()
-                except:
-                    with open(ctx.options.cacheDirectory + "/" + sql_response[3], 'rb') as temp_file:
-                        temp_content = temp_file.read()
-                        temp_file.close()
-            else:
-                with open(ctx.options.cacheDirectory + "/" + sql_response[3], 'rb') as temp_file:
-                    temp_content = temp_file.read()
-                    temp_file.close()
+            
+            with open(ctx.options.cacheDirectory + "/" + sql_response[3], 'rb') as temp_file:
+                temp_content = temp_file.read()
+                temp_file.close()
 
             with open(ctx.options.cacheDirectory + "/" + sql_response[0], 'rb') as temp_file:
                 temp_headers = pickle.load(temp_file, encoding='latin1')

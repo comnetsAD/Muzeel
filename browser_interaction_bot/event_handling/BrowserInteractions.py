@@ -1,6 +1,7 @@
 from selenium.webdriver import Chrome
+from selenium.webdriver.support.ui import WebDriverWait
 from selenium.common.exceptions import NoSuchWindowException, UnexpectedAlertPresentException
-from time import sleep
+from time import sleep, time
 import psutil
 
 
@@ -20,13 +21,22 @@ class BrowserInteractions:
             else:
                 raise e
         return browser.current_url
+    
+    @classmethod
+    def refresh(cls, browser: Chrome) -> None:
+        browser.refresh()
+        cls.close_alert_accept(browser)
+        cls.wait_for_page_load(browser)
 
     @classmethod
     def wait_for_page_load(cls, browser: Chrome) -> None:
-        load_state = browser.execute_script("return document.readyState")
-        while load_state != "complete":
-            load_state = browser.execute_script("return document.readyState")
+        start_time = time()
+        try:
+            WebDriverWait(browser, 40).until(browser.execute_script("return document.readyState") == "complete")
+        except:
+            browser.execute_script("return window.stop();")
         cls.wait(2)
+        cls.prevent_page_change(browser)
 
     @classmethod
     def scroll_to_top(cls, browser: Chrome):
@@ -61,9 +71,42 @@ class BrowserInteractions:
                 print("Window already closed")
 
     @classmethod
+    def prevent_page_change(cls, browser: Chrome):
+        js = """try {
+                    window.addEventListener('beforeunload', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        e.returnValue = '';
+                    });
+                }
+                catch (err) { }
+        """
+        browser.execute_script(js)
+
+    @classmethod
     def screenshot(cls, browser: Chrome, file_name: str):
         cls.wait(5)
         browser.save_screenshot(file_name+".png")
+
+    @classmethod
+    def close_alert_dismiss(cls, browser: Chrome):
+        try:
+            alert = browser.switch_to.alert
+            alert.dismiss()
+            return True
+        except:
+            print("No alert")
+            return False
+
+    @classmethod
+    def close_alert_accept(cls, browser: Chrome):
+        try:
+            alert = browser.switch_to.alert
+            alert.accept()
+            return True
+        except:
+            print("No alert")
+            return False
 
     @staticmethod
     def wait(seconds: int) -> None:

@@ -11,12 +11,14 @@ from .BrowserInteractions import BrowserInteractions
 class DefaultEventHandler(EventHandler):
     def __try_double_click(self, base_url, element):
         try:
+            alert_closed = BrowserInteractions.close_alert_dismiss(self.browser)
             BrowserInteractions.close_extraneous_tabs(self.browser, 1)
             click_cnt = 0
-            while self.browser.current_url == base_url and click_cnt < 2:
+            while not alert_closed and self.browser.current_url == base_url and click_cnt < 2:
                 ActionChains(self.browser).move_to_element(element).click(element).perform()
-                click_cnt += 1
+                alert_closed = BrowserInteractions.close_alert_dismiss(self.browser)
                 BrowserInteractions.close_extraneous_tabs(self.browser, 1)
+                click_cnt += 1
         except:
             pass
 

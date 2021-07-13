@@ -18,6 +18,7 @@ from .DOTFileBuilder import DOTFileBuilder
 class ChromeExecution:
     def __init__(self, url: str, event_handler: EventHandler, output_file_directory: str = None, proxy_url: str = None, solution: str = "original"):
         self.url = url
+        self.proxy_url = proxy_url
         self.output_file_directory = "screenshots" if output_file_directory is None else output_file_directory
         self.create_directory(self.output_file_directory)
 
@@ -27,14 +28,14 @@ class ChromeExecution:
         self.logs = set()
         self.chrome_options = ChromeOptions()
         self.set_default_chrome_options()
-        self.seleniumwire_options = {}
-
-        if proxy_url:
-            self.chrome_options.add_argument("--proxy-server="+proxy_url)
-            self.seleniumwire_options = {
+        
+        seleniumwire_options = {}
+        if self.proxy_url:
+            self.chrome_options.add_argument("--proxy-server="+self.proxy_url)
+            seleniumwire_options = {
                 'proxy': {
-                    'http': 'http://'+proxy_url,
-                    'https': 'https://'+proxy_url,
+                    'http': 'http://'+self.proxy_url,
+                    'https': 'https://'+self.proxy_url,
                     'no_proxy': 'localhost,127.0.0.1'
                 }
             }
@@ -45,7 +46,7 @@ class ChromeExecution:
         self.desired_capabilities = DesiredCapabilities.CHROME
         self.desired_capabilities['goog:loggingPrefs'] = { 'browser':'ALL' }
 
-        self.browser = webdriver.Chrome(options=self.chrome_options, seleniumwire_options=self.seleniumwire_options, desired_capabilities=self.desired_capabilities)
+        self.browser = webdriver.Chrome("/usr/bin/chromedriver", options=self.chrome_options, seleniumwire_options=seleniumwire_options, desired_capabilities=self.desired_capabilities)
         self.browser.request_interceptor = self.interceptor
         self.event_handler.set_browser(self.browser)
         self.dot_file_builder = DOTFileBuilder(self.output_file_directory)
@@ -58,7 +59,6 @@ class ChromeExecution:
         self.chrome_options.add_experimental_option("mobileEmulation", mobile_emulation)
         self.chrome_options.add_argument("--ignore-certificate-errors")
         self.chrome_options.add_argument("--no-sandbox")
-        self.chrome_options.add_argument("--disable-popup-blocking")
         self.chrome_options.add_argument("--headless")
         self.chrome_options.add_argument("--user-data-dir={}".format(self.output_file_directory+"/chrome_data"))
 
@@ -83,16 +83,23 @@ class ChromeExecution:
         self.trace_file.flush()
 
     def get_logs(self) -> None:
-        logs_recorded = 0
-        for log in self.browser.get_log('browser'):
-            self.logs.add(log.get('message', ''))
-            logs_recorded += 1
-        print(logs_recorded)
-        
         try:
-            remove(self.output_file_directory+"/chrome_data/Default/chrome_debug.log")
-        except: 
+            with open(self.output_file_directory+"/chrome_data/Default/chrome_debug.log") as log_file:
+                self.logs = set(log_file.read().split("\n"))
+            print(len(self.logs))
+        except:
             pass
+    
+    def get_local_storage_keys(self) -> None:
+        functions_called = self.browser.execute_script( \
+            "var ls = window.localStorage, keys = []; " \
+            "for (var i = 0; i < ls.length; ++i) " \
+            "  keys[i] = ls.key(i); " \
+            "return keys; ")
+        print(len(functions_called))
+        self.logs.update(functions_called)
+        print(len(self.logs))
+            
 
     def close_browser(self) -> None:
         try:
@@ -109,10 +116,12 @@ class ChromeExecution:
     
     def open_page(self, url) -> str:
         try:
-            return BrowserInteractions.open_page(self.browser, self.url)
+            url_loaded = BrowserInteractions.open_page(self.browser, self.url)
+            BrowserInteractions.close_alert_accept(self.browser)
+            return url_loaded
         except:
             self.restart()
-            return BrowserInteractions.open_page(self.browser, self.url)
+            self.open_page(url)
     
     def force_close_process(self) -> None:
         for child in self.child_processes:
@@ -124,7 +133,17 @@ class ChromeExecution:
     def restart(self) -> None:
         self.force_close_process()
         self.remove_chrome_data()
-        self.browser = webdriver.Chrome(options=self.chrome_options, seleniumwire_options=self.seleniumwire_options, desired_capabilities=self.desired_capabilities)
+
+        seleniumwire_options = {}
+        if self.proxy_url:
+            seleniumwire_options = {
+                'proxy': {
+                    'http': 'http://'+self.proxy_url,
+                    'https': 'https://'+self.proxy_url,
+                    'no_proxy': 'localhost,127.0.0.1'
+                }
+            }
+        self.browser = webdriver.Chrome(options=self.chrome_options, seleniumwire_options=seleniumwire_options, desired_capabilities=self.desired_capabilities)
         self.browser.request_interceptor = self.interceptor
         self.event_handler.set_browser(self.browser)
         self.child_processes = self.determine_child_processes(self.browser.service.process.pid)
@@ -136,6 +155,7 @@ class ChromeExecution:
             pass
 
     def close_tools(self) -> None:
+        self.get_logs()
         self.close_browser()
         self.force_close_process()
         self.remove_chrome_data()
@@ -151,7 +171,8 @@ class ChromeExecution:
 
     def execute(self) -> Event:
         self.url = self.open_page(self.url)
-        # BrowserInteractions.scroll_to_bottom(self.browser)
+        BrowserInteractions.scroll_to_bottom(self.browser)
+        self.get_logs()
         html_document_util = HTMLDocumentUtil(self.browser)
         event_list = html_document_util.event_list
         print("No of events:", len(event_list))
@@ -161,17 +182,17 @@ class ChromeExecution:
 
         while event_queue:
             has_child = False # used for dot file
-            self.open_page(self.url)
+            BrowserInteractions.refresh(self.browser)
             BrowserInteractions.scroll_to_top(self.browser)
             parent_event = event_queue.popleft()
 
             print("Parent", parent_event.xpath, parent_event.event_type)
             self.event_handler.trigger_event(parent_event)
-            self.write_to_trace_file(parent_event.serialize_full_event_trace())
             self.get_logs()
+            self.write_to_trace_file(parent_event.serialize_full_event_trace())
             # self.screenshot()
-
-            if self.browser.current_url != self.url:
+            alert_closed = BrowserInteractions.close_alert_dismiss(self.browser)
+            if alert_closed:
                 self.open_page(self.url)
                 self.dot_file_builder.add_node(parent_event.generate_full_dot_representation())
                 continue
@@ -182,30 +203,31 @@ class ChromeExecution:
                 print("{} {}".format(event.event_type, event.xpath))
                 try:
                     self.event_handler.trigger_event(event)
+                    BrowserInteractions.close_alert_dismiss(self.browser)
                     parent_event.add_child(event)
                     event_queue.append(event)
                     del event_list[i]
                     has_child = True
-                    self.open_page(self.url)
+                    BrowserInteractions.refresh(self.browser)
                     self.event_handler.trigger_event(parent_event)
+                    
                 except InteractionBotException:
-                    if self.browser.current_url != self.url:
-                        self.open_page(self.url)
-                        self.event_handler.trigger_event(parent_event)
-
+                    BrowserInteractions.close_alert_dismiss(self.browser)
+                    
                 finally:
                     i -= 1
-                    if time.time() - self.start_time > 3600:
-                        self.persist_state([parent_event] + list(event_queue), event_list)
-                        raise Exception("Timeout")
+                    # if time.time() - self.start_time > 3600:
+                    #    self.persist_state([parent_event] + list(event_queue), event_list)
+                    #    raise Exception("Timeout")
 
             if not has_child:
                 self.dot_file_builder.add_node(parent_event.generate_full_dot_representation())
             print()
-
+        
         for event in event_list:
             print("{} {}".format(event.event_type, event.xpath))
-
+        
         print("Complete")
+        self.get_logs()
         self.close_tools()
-        return base_event
+        return None

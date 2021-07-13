@@ -59,7 +59,8 @@ class DataStore:
             self.function_id_map[request_url] = set()
             try:
                 esprima.parseModule(script_content, {"range": True, "tolerant": True}, esprima_delegate)
-            except:
+            except Exception as e:
+                print("There is an error in instrumentation", request_url, e)
                 pass
             self.__add_log_statements_to_update_file(request_url, function_start_end_positions)
 
@@ -70,7 +71,8 @@ class DataStore:
         for function_start_end_position in function_start_end_positions:
             [start_pos, end_pos] = function_start_end_position
             function_id = "{} | {} | {}".format(request_url, start_pos, end_pos)
-            log_statement = "console.log('{}');".format(function_id)
+            log_statement = "if (!localStorage.getItem('"+function_id+"')) { localStorage.setItem('"+function_id+"', true); console.log('"+function_id+"');}"
+            # log_statement = "/* testing */"
             start_pos += offset
             end_pos += offset
             self.data_map[request_url]["updated"] = self.data_map[request_url]["updated"][:start_pos + 1] + log_statement + self.data_map[request_url]["updated"][start_pos+1:]
@@ -89,9 +91,9 @@ class DataStore:
 
     def persist_updated_files(self):
         for request_url in self.data_map:
-            content_file_path = self.request_url_content_file_map[request_url]
+            content_file_path = self.request_url_content_file_map[request_url].split("/")[1]
             update_file_path = content_file_path.split(".c")[0] + ".m"
-            with open(self.cache_directory + "/" + update_file_path, "w") as update_file:
+            with open(self.cache_directory + "/data_muzeel_new/" + update_file_path, "w") as update_file:
                 update_file.write(self.data_map[request_url]["updated"])
 
     def remove_unused_functions(self, used_function_id_map: dict):
