@@ -1,0 +1,15 @@
+<?php
+	ob_start();
+	require_once 'includes_client.php';
+	$page 	= isset($_REQUEST['page'])?trim($_REQUEST['page']):'home';
+	$page 	= (is_file(BASE_ROOT . "/model/client/view/contents/$page.php"))?$page:'home';
+	$header = ($page == "home")?"header_home_page":"header_sub_page";
+	
+	include_once(BASE_ROOT . "/model/client/view/$header.php");
+	
+	include_once(BASE_ROOT . "/model/client/view/contents/$page.php");
+	
+	include_once(BASE_ROOT . "/model/client/view/footer.php");
+	$UtilityDb->setViewStatistics();
+//	if(SITE_PRODUCTION)	{	include_once(BASE_ROOT . "/model/client/view/htm/tracker.php");	}
+?>

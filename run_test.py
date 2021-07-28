@@ -5,21 +5,14 @@ from LogParser import LogParser
 from browser_interaction_bot.ChromeExecution import ChromeExecution
 from browser_interaction_bot.event_handling.DefaultEventHandler import DefaultEventHandler
 from MainExecution import execute
-
-db_details = {
-    "database": "clonedSites",
-    "password": "password",
-    "cache_directory": "/media/yasir/externalDrive/ubuntuBK/yasir/IMC_LUMS_NYUAD_2021/",
-    "port": 9922
-}
+from config import db_details
 
 site_list = sys.argv[1]
 proxy_port = sys.argv[2]
 error_log = open("results/error_log", "a")
 completed_sites = open("results/completed_sites_"+site_list, "a")
 
-
-with open("site_lists_rerun/"+site_list, "r") as site_list_file:
+with open("site_lists_pakistan/"+site_list, "r") as site_list_file:
     sites = site_list_file.read().split("\n")
 
     for site in sites:

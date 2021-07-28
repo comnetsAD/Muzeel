@@ -1,0 +1,1 @@
+.wpp-no-data{}.wpp-list{}.wpp-list li{overflow:hidden;float:none;clear:both}.wpp-list li.current{}.wpp-thumbnail{display:inline;float:left;margin:0 5px 0 0;border:none}.wpp-post-title{}.wpp-excerpt{}.post-stats{display:block;font-size:9px;font-weight:700}.wpp-comments{}.wpp-views{}.wpp-author{}.wpp-date{}.wpp-category{}.wpp-rating{}

@@ -1,0 +1,2 @@
+jQuery(document).ready(function(){if(jQuery(window).width()>767){jQuery('body').css("overflow-x","hidden");jQuery(".testcase").mouseover(function(){jQuery(".handsets-strip").css("width","160px");jQuery('.special-title').css("display","block");jQuery('.testcase').css('background-color','#fff')});jQuery(".testcase").mouseout(function(){jQuery(".handsets-strip").css("width","50px");jQuery('.special-title').css("display","none");});}
+if(jQuery(window).width()<767){jQuery(".testcase").on('click',function(){jQuery(".handsets-strip").css("width","70px");});}});

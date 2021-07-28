@@ -22,10 +22,10 @@ class ReadProxy:
     def load(self, loader):
         loader.add_option(name = "dbHost", typespec = str, default = "127.0.0.1", help = "Provide the host for the cache db, use dbHost")
         loader.add_option(name = "dbPort", typespec = int, default= 9922, help = "Provide port for the cache db, use dbPort")
-        loader.add_option(name= "dbName", typespec = str, default = "clonedSites", help = "Provide the db name, use dbName")
+        loader.add_option(name= "dbName", typespec = str, default = "clonedPakistaniSites", help = "Provide the db name, use dbName")
         loader.add_option(name = "dbUser", typespec = str, default = "root", help = "Provide the user for the cache db, use dbUser")
         loader.add_option(name= "dbPassword", typespec = str, default = "password", help = "Provide the password for the cache db, use dbPassword")
-        loader.add_option(name= "cacheDirectory", typespec = str, default="/media/yasir/externalDrive/ubuntuBK/yasir/IMC_LUMS_NYUAD_2021", help = "Provide the directory to cache the pages")
+        loader.add_option(name= "cacheDirectory", typespec = str, default="/media/yasir/externalDrive/ubuntuBK/yasir/IMC_LUMS_NYUAD_2021/", help = "Provide the directory to cache the pages")
 
     def running(self):
         self.connection = pymysql.connect(host=ctx.options.dbHost,
@@ -66,7 +66,7 @@ class ReadProxy:
                 file_name = sql_response[1].split("/")[1]
                 muzeel_file_name = file_name.split(".u")[0]+".m" # you can't parse the js, so you don't reate the .m file
                 try:
-                    with open(ctx.options.cacheDirectory + "/data_muzeel_new/" + muzeel_file_name, 'rb') as temp_file:
+                    with open(ctx.options.cacheDirectory + "/data_muzeel_pakistan/" + muzeel_file_name, 'rb') as temp_file:
                         temp_content = temp_file.read()
                         temp_file.close()
                 except:

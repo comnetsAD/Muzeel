@@ -26,6 +26,17 @@ class DefaultEventHandler(EventHandler):
         self.browser = browser
 
     def trigger_individual_event(self, event: Event) -> None:
+        """This function triggers an individual event.
+
+        Args:
+            event (Event): Event to be triggered
+
+        Raises:
+            InteractionBotException: In case the event can't be triggered, we raise InteractionBotException
+        
+        Potential Updates:
+        Checking if an error occurred after triggering an event may not be the best way of determining if an event, look for other methods.
+        """
         xpath = event.xpath
         event_type = event.event_type
         element = self.find_element_by_xpath(xpath)

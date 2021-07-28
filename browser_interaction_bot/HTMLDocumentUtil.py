@@ -6,6 +6,8 @@ from .event_handling.Event import Event
 
 
 class HTMLDocumentUtil:
+    """Class which takes the page source and generates a list of all potential events.
+    """
     def __init__(self, browser: Chrome):
         self.browser = browser
         self.doc = BeautifulSoup(self.browser.page_source, 'html.parser', multi_valued_attributes=None)
@@ -14,6 +16,24 @@ class HTMLDocumentUtil:
         self.dfs(self.doc.find_all("body")[0], "/html/body")
 
     def dfs(self, root: Tag, xpath: str) -> None:
+        """Conducts a dfs traversal over the body of the page, for each element, it constructs an xpath and uses cdp
+        to check which events are attached.
+
+        Currently, link, script, style, svg, img, noscript elements are ignored and their descendants are not explored, because they cannot contain user interaction events.
+        Also, the events attached to the body are ignored, but descendants are explored.
+
+        Args:
+            root (Tag): Root tag of dfs
+            xpath (str): Starting xpath, for body, this is "/html/body"
+
+        Potential Updates:
+        Event hierarchy is not currently considered. Sometimes events are not attached to the element itself but one of its parents.
+        To be able to properly get all events, it is important to consider parent events. However, this greatly increases the number of events to consider.
+        Things to try:
+        . Add events attached to the body to all children.
+        . ML model that can identify events based on tag name and attributes. Generate data set from real user tests + cdp entries
+        . Attempt to add predecessor events to child events (Note: this will be costly but worth a try)
+        """
         if xpath != "/html/body":
             listeners = self.get_event_listeners_by_xpath(xpath)
 

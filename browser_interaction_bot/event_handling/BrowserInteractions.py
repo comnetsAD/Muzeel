@@ -1,6 +1,7 @@
 from selenium.webdriver import Chrome
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.common.exceptions import NoSuchWindowException, UnexpectedAlertPresentException
+from .config import MAX_RETRIES_AFTER_ERROR, PAGE_LOAD_WAIT_TIME
 from time import sleep, time
 import psutil
 
@@ -14,7 +15,7 @@ class BrowserInteractions:
         except UnexpectedAlertPresentException:
             pass
         except Exception as e:
-            if retry_count < 5:
+            if retry_count < MAX_RETRIES_AFTER_ERROR:
                 print("Retrying page load, error occurred", e)
                 cls.wait(3)
                 return cls.open_page(browser, url, retry_count+1)
@@ -32,7 +33,7 @@ class BrowserInteractions:
     def wait_for_page_load(cls, browser: Chrome) -> None:
         start_time = time()
         try:
-            WebDriverWait(browser, 40).until(browser.execute_script("return document.readyState") == "complete")
+            WebDriverWait(browser, PAGE_LOAD_WAIT_TIME).until(browser.execute_script("return document.readyState") == "complete")
         except:
             browser.execute_script("return window.stop();")
         cls.wait(2)
@@ -45,6 +46,9 @@ class BrowserInteractions:
 
     @classmethod
     def scroll_to_bottom(cls, browser: Chrome):
+        """Potential update:
+        Consider waiting longer for scroll? Not fully necessary though.
+        """
         js = 'return Math.max( document.body.scrollHeight, document.body.offsetHeight,  ' \
              'document.documentElement.clientHeight,  document.documentElement.scrollHeight,  ' \
              'document.documentElement.offsetHeight); '
@@ -52,8 +56,8 @@ class BrowserInteractions:
         offset = 0
         while offset < scroll_height:
             browser.execute_script("window.scrollTo(0, %s);" % offset)
-            cls.wait(5)
-            offset += browser.get_window_size()['height']*1/3
+            cls.wait(2)
+            offset += int(browser.get_window_size()['height']*1/3)
 
     @classmethod
     def close_extraneous_tabs(cls, browser: Chrome, limit: int):

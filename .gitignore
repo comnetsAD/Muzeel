@@ -8,3 +8,4 @@ fixed_error_log
 /site_lists*
 /*results*
 faulty_but_workable
+generate_faulty_but_workable.*

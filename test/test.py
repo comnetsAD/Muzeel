@@ -14,16 +14,16 @@ def interceptor_muzeel(request):
 
 seleniumwire_options = {
     'proxy': {
-        'http': 'http://127.0.0.1:9700',
-        'https': 'https://127.0.0.1:9700',
+        'http': 'http://127.0.0.1:9706',
+        'https': 'https://127.0.0.1:9706',
         'no_proxy': 'localhost,127.0.0.1'
     }
 }
 
 seleniumwire_options_muzeel = {
     'proxy': {
-        'http': 'http://127.0.0.1:9705',
-        'https': 'https://127.0.0.1:9705',
+        'http': 'http://127.0.0.1:9707',
+        'https': 'https://127.0.0.1:9707',
         'no_proxy': 'localhost,127.0.0.1'
     }
 }

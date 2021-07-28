@@ -1,0 +1,6 @@
+site_file = open("scrape_site_list", "r")
+site_list = site_file.read().split("\n")
+site_file.close()
+site_file = open("scrape_site_list", "w")
+site_file.write("\n".join(["https://"+i for i in site_list]))
+site_file.close()
