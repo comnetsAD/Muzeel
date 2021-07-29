@@ -16,7 +16,18 @@ from .DOTFileBuilder import DOTFileBuilder
 
 
 class ChromeExecution:
+    """This is the main dce class. Run the execute function to run dce.
+    """
     def __init__(self, url: str, event_handler: EventHandler, output_file_directory: str = None, proxy_url: str = None, solution: str = "original"):
+        """Constructor
+
+        Args:
+            url (str): The url of the page to be dead code eliminated
+            event_handler (EventHandler): The event handler to used
+            output_file_directory (str, optional): Where you want the output to b
+            proxy_url (str, optional): [description]. Defaults to None.
+            solution (str, optional): [description]. Defaults to "original".
+        """
         self.url = url
         self.proxy_url = proxy_url
         self.output_file_directory = "screenshots" if output_file_directory is None else output_file_directory
@@ -54,7 +65,8 @@ class ChromeExecution:
         self.start_time = time.time()
 
     def set_default_chrome_options(self) -> None:
-        # self.chrome_options.add_experimental_option("profile.default_content_setting_values.notifications", 2)
+        """Sets default chrome options, to see what's happening on the browser, comment out, the "--headless" line
+        """
         mobile_emulation = { "deviceName": "iPhone X" }
         self.chrome_options.add_experimental_option("mobileEmulation", mobile_emulation)
         self.chrome_options.add_argument("--ignore-certificate-errors")
@@ -63,6 +75,11 @@ class ChromeExecution:
         self.chrome_options.add_argument("--user-data-dir={}".format(self.output_file_directory+"/chrome_data"))
 
     def determine_child_processes(self, process_id: int):
+        """Determines child processes, useful in closing extraneous chrome windows after a crashes
+
+        Args:
+            process_id (int): The process id of the parent process
+        """
         p = psutil.Process(process_id)
         return p.children(recursive=True)
 
@@ -71,6 +88,11 @@ class ChromeExecution:
             makedirs(output_directory)
 
     def interceptor(self, request):
+        """Interceptor used for selenium wire
+
+        Args:
+            request: A seleniumwire request
+        """
         request.headers['init_url'] = self.url
         request.headers['solution'] = self.solution
 
@@ -163,6 +185,15 @@ class ChromeExecution:
         self.trace_file.close()
 
     def persist_state(self, event_queue, event_list) -> None:
+        """This can be used to persist the current state after a crash
+
+        Args:
+            event_queue: The current event queue
+            event_list: The current event list
+        
+        Potential update:
+            One thing that should be added is the ability to restart after a crash from these persisted states.
+        """
         with open(self.output_file_directory+"/event_queue.json", "w") as event_queue_file:
             event_queue_file.write(dumps([event.serialize_full_event_trace() for event in event_queue]))
         

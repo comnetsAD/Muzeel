@@ -5,6 +5,8 @@ from selenium.webdriver import Chrome
 
 
 class EventHandler(ABC):
+    """Abstract event handler class
+    """
     @abstractmethod
     def set_browser(self, browser: Chrome):
         pass

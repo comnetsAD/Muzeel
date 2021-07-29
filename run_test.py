@@ -12,7 +12,7 @@ proxy_port = sys.argv[2]
 error_log = open("results/error_log", "a")
 completed_sites = open("results/completed_sites_"+site_list, "a")
 
-with open("site_lists_pakistan/"+site_list, "r") as site_list_file:
+with open("sites_lists/"+site_list, "r") as site_list_file:
     sites = site_list_file.read().split("\n")
 
     for site in sites:

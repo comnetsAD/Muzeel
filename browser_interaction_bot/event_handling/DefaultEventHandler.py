@@ -9,7 +9,14 @@ from .BrowserInteractions import BrowserInteractions
 
 
 class DefaultEventHandler(EventHandler):
-    def __try_double_click(self, base_url, element):
+    def __try_double_click(self, base_url: str, element):
+        """This attempts to double click on an element with a click event. It is usually triggered after the initial click, therefore triple clicking.
+        This allows us to get both open and close events.
+
+        Args:
+            base_url (str): This is the original url, this is necessary in case the double click leads the page to change
+            element: This is the selenium element object
+        """
         try:
             alert_closed = BrowserInteractions.close_alert_dismiss(self.browser)
             BrowserInteractions.close_extraneous_tabs(self.browser, 1)
