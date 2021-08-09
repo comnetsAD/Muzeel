@@ -66,7 +66,7 @@ class ReadProxy:
                 file_name = sql_response[1].split("/")[1]
                 muzeel_file_name = file_name.split(".u")[0]+".m" # you can't parse the js, so you don't reate the .m file
                 try:
-                    with open(ctx.options.cacheDirectory + "/data_muzeel_pakistan/" + muzeel_file_name, 'rb') as temp_file:
+                    with open(ctx.options.cacheDirectory + "/" + muzeel_file_name, 'rb') as temp_file:
                         temp_content = temp_file.read()
                         temp_file.close()
                 except:

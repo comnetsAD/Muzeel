@@ -153,6 +153,6 @@ class DataStore:
         for request_url in self.data_map:
             content_file_path = self.request_url_content_file_map[request_url].split("/")[1]
             update_file_path = content_file_path.split(".c")[0] + ".m"
-            with open(self.cache_directory + "/data_muzeel_pakistan/" + update_file_path, "w") as update_file:
+            with open(self.cache_directory + "/" + update_file_path, "w") as update_file:
                 update_file.write(self.data_map[request_url]["updated"])
 

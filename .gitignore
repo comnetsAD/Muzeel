@@ -9,3 +9,5 @@ fixed_error_log
 /*results*
 faulty_but_workable
 generate_faulty_but_workable.*
+MuzeelFeqEval_*
+*.pyc
