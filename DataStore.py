@@ -146,9 +146,6 @@ class DataStore:
 
     def persist_updated_files(self):
         """This saves the updated content to disk with the ".m" extension.
-
-        Potential update:
-        Currently it's saving in the data_muzeel_pakistan folder, be sure to change this/play around with the output folder.
         """
         for request_url in self.data_map:
             content_file_path = self.request_url_content_file_map[request_url].split("/")[1]
