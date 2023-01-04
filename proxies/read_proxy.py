@@ -8,6 +8,11 @@ import binascii
 import pickle
 import time
 from urllib.parse import urlparse
+import sys
+
+sys.path.append("..")
+from config import db_details
+sys.path.append(".")
 
 requests = {}
 class ReadProxy:
@@ -21,11 +26,11 @@ class ReadProxy:
     
     def load(self, loader):
         loader.add_option(name = "dbHost", typespec = str, default = "127.0.0.1", help = "Provide the host for the cache db, use dbHost")
-        loader.add_option(name = "dbPort", typespec = int, default= 9922, help = "Provide port for the cache db, use dbPort")
-        loader.add_option(name= "dbName", typespec = str, default = "clonedPakistaniSites", help = "Provide the db name, use dbName")
-        loader.add_option(name = "dbUser", typespec = str, default = "root", help = "Provide the user for the cache db, use dbUser")
-        loader.add_option(name= "dbPassword", typespec = str, default = "password", help = "Provide the password for the cache db, use dbPassword")
-        loader.add_option(name= "cacheDirectory", typespec = str, default="/media/yasir/externalDrive/ubuntuBK/yasir/IMC_LUMS_NYUAD_2021/", help = "Provide the directory to cache the pages")
+        loader.add_option(name = "dbPort", typespec = int, default= db_details["port"], help = "Provide port for the cache db, use dbPort")
+        loader.add_option(name= "dbName", typespec = str, default = db_details["database"], help = "Provide the db name, use dbName")
+        loader.add_option(name = "dbUser", typespec = str, default = db_details["username"], help = "Provide the user for the cache db, use dbUser")
+        loader.add_option(name= "dbPassword", typespec = str, default = db_details["password"], help = "Provide the password for the cache db, use dbPassword")
+        loader.add_option(name= "cacheDirectory", typespec = str, default=db_details["cache_directory"]+"/data/", help = "Provide the directory to cache the pages")
 
     def running(self):
         self.connection = pymysql.connect(host=ctx.options.dbHost,
@@ -35,19 +40,36 @@ class ReadProxy:
                              db=ctx.options.dbName,
                              autocommit=True)
 
+    def reconnect(self):
+        self.connection = pymysql.connect(host=ctx.options.dbHost,
+                             user=ctx.options.dbUser,
+                             port=ctx.options.dbPort,
+                             password=ctx.options.dbPassword,
+                             db=ctx.options.dbName,
+                             autocommit=True)
+
     def request(self, flow: http.HTTPFlow) -> None:
+        if self.connection.cursor().connection.open != True:
+            self.reconnect()
+
         # store the request time
         requestUrl = flow.request.pretty_url.split("?")[0]
         requests[requestUrl] = time.time()
-        initiatingUrl = flow.request.headers["init_url"]
-        del flow.request.headers["init_url"]
+        try:
+            initiatingUrl = flow.request.headers["init_url"]
+            del flow.request.headers["init_url"]
+        except KeyError as e:
+            print(e)
+            print(flow.request.headers)
+            return
+        
         del flow.request.headers["solution"]
 
         try:
             with self.connection.cursor() as cursor:
                 requestUrl = flow.request.pretty_url.split("?")[0]
                 flow.initiatingUrl = self.parseUrl(initiatingUrl)
-                query_template_search = "SELECT headFilePath, updateFilePath, delay, contFilePath FROM cachedPages WHERE requestUrl = '{0}' AND initiatingUrl = '{1}'".format(requestUrl, flow.initiatingUrl)
+                query_template_search = "SELECT headFilePath, updateFilePath, contFilePath, type FROM cachedPages WHERE requestUrl = '{0}' AND initiatingUrl = '{1}'".format(requestUrl, flow.initiatingUrl)
                 cursor.execute(query_template_search)
                 sql_response = cursor.fetchone()
         finally:
@@ -55,7 +77,7 @@ class ReadProxy:
 
         # return miss if not cache hit
         if not sql_response:
-            print ("--------- CACHE MISS {} -----------".format(requestUrl), "jquery" in requestUrl)
+            print ("--------- CACHE MISS {} -----------".format(requestUrl))
             # flow.response = http.HTTPResponse.make (200,"",{"Content-Type": "text/html"})
             # flow.initiatingUrl = False
             return
@@ -63,18 +85,22 @@ class ReadProxy:
             print ("--------- CACHE HIT {} -----------".format(requestUrl))
             temp_content = None
             if sql_response[1] != None:
-                file_name = sql_response[1].split("/")[1]
-                muzeel_file_name = file_name.split(".u")[0]+".m" # you can't parse the js, so you don't reate the .m file
+                file_name = sql_response[1] #.split("/")[1]
+                muzeel_file_name = "muzeel/" + file_name.split(".u")[0]+".m" # you can't parse the js, so you don't create the .m file
                 try:
-                    with open(ctx.options.cacheDirectory + "/data_muzeel_pakistan/" + muzeel_file_name, 'rb') as temp_file:
+                    # with open(ctx.options.cacheDirectory + "/" + "MuzeelScripts" + "/" + muzeel_file_name, 'rb') as temp_file:
+                    with open(ctx.options.cacheDirectory + "/" + muzeel_file_name, 'rb') as temp_file:
                         temp_content = temp_file.read()
                         temp_file.close()
+                        print("*"*32)
+                        print("MUZEEL FILE:", muzeel_file_name)
+                        print("*"*32)
                 except:
-                    with open(ctx.options.cacheDirectory + "/" + sql_response[3], 'rb') as temp_file:
+                    with open(ctx.options.cacheDirectory + "/" + sql_response[2], 'rb') as temp_file:
                         temp_content = temp_file.read()
                         temp_file.close()
             else:
-                with open(ctx.options.cacheDirectory + "/" + sql_response[3], 'rb') as temp_file:
+                with open(ctx.options.cacheDirectory + "/" + sql_response[2], 'rb') as temp_file:
                     temp_content = temp_file.read()
                     temp_file.close()
 
@@ -98,13 +124,8 @@ class ReadProxy:
                 headers_dict)
 
             if requestUrl in requests:
-                time_passed = int(int(sql_response[2])/1000.0 - (time.time()-requests[requestUrl])*1000)
                 del requests[requestUrl]
-                """
-                if time_passed > 0:
-                    print ("\n\n########## WAITING: {}\n\n".format(time_passed))
-                    time.sleep(time_passed)
-                """
+
             return
 
 addons = [

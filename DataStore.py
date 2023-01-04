@@ -1,7 +1,7 @@
 import pymysql.cursors
 import esprima
 from EliminationUtils import EliminationUtils
-
+import os
 """Data store for the JS files, both the original and updated"""
 
 
@@ -12,7 +12,7 @@ class DataStore:
         self.data_map = {} # Map of form {request_url: {"original": original_code, "updated": updated_code}}
         self.function_id_map = {} # Map of form {request_url: set(function_identifiers)}. For each request_url, we keep the set of function identifiers in the file, 
         self.request_url_content_file_map = {} # Map of form {request_url: file_path_of_original_code }. Makes retrieval easier
-        self.cache_directory = db_details.get("cache_directory", "") # Directory of folder where data is cached.
+        self.cache_directory = db_details.get("cache_directory", "")+"/data/" # Directory of folder where data is cached.
         self.db = db_details.get("database", "db")
         self.connection = pymysql.connect(
             host=db_details.get("host", "localhost"),
@@ -36,7 +36,7 @@ class DataStore:
         str: File content
         """
 
-        with open(self.cache_directory + "/" + content_file_path, "r") as file:
+        with open(self.cache_directory + "/" + content_file_path, "r", errors="ignore") as file:
             return file.read()
 
     def __populate_data_map(self) -> None:
@@ -49,17 +49,18 @@ class DataStore:
         """
 
         print("Getting JS files for", self.url)
-        with self.connection:
-            with self.connection.cursor() as cursor:
-                sql = "SELECT requestUrl, contFilePath FROM {}.cachedPages WHERE initiatingUrl='{}' AND updateFilePath IS NOT NULL".format(
-                    self.db, self.url)
-                cursor.execute(sql)
-                result = cursor.fetchall()
-                for js_file in result:
-                    [request_url, content_file_path] = js_file
-                    file_content = self.__get_file_content(content_file_path)
-                    self.data_map[request_url] = {"original": file_content, "updated": file_content}
-                    self.request_url_content_file_map[request_url] = content_file_path
+
+        with self.connection.cursor() as cursor:
+            sql = "SELECT requestUrl, contFilePath FROM {0}.cachedPages WHERE (initiatingUrl='{1}' OR initiatingUrl='{1}/') AND updateFilePath IS NOT NULL".format(
+                self.db, self.url)
+            cursor.execute(sql)
+            result = cursor.fetchall()
+            for js_file in result:
+                [request_url, content_file_path] = js_file
+                file_content = self.__get_file_content(content_file_path)
+                print(content_file_path)
+                self.data_map[request_url] = {"original": file_content, "updated": file_content}
+                self.request_url_content_file_map[request_url] = content_file_path
 
     def __populate_function_id_map(self) -> None:
         """Populates the function_id_map. We maintain a function_id set for each javascript file requested by the page.
@@ -142,17 +143,27 @@ class DataStore:
             end_pos -= offset
             script_content = script_content[:start_pos+1] + script_content[end_pos:]
             offset += end_pos - start_pos - 1
+
+        if not os.path.exists(f'ranges/{self.url.replace("/", "_")}/'):
+            os.makedirs(f'ranges/{self.url.replace("/", "_")}/')
+
+        #print (self.request_url_content_file_map[request_url])
+        content_file_path = self.request_url_content_file_map[request_url]
+        range_file_path = content_file_path.replace(".c", ".txt")
+
+        with open(f'ranges/{self.url.replace("/", "_")}/{range_file_path}', 'w') as f:
+            for start_end_position in start_end_position_list:
+                [start_pos, end_pos] = start_end_position
+                f.write(f"{start_pos},{end_pos}\n")
+
         self.data_map[request_url]["updated"] = script_content
 
     def persist_updated_files(self):
         """This saves the updated content to disk with the ".m" extension.
-
-        Potential update:
-        Currently it's saving in the data_muzeel_pakistan folder, be sure to change this/play around with the output folder.
         """
         for request_url in self.data_map:
-            content_file_path = self.request_url_content_file_map[request_url].split("/")[1]
+            content_file_path = self.request_url_content_file_map[request_url]
             update_file_path = content_file_path.split(".c")[0] + ".m"
-            with open(self.cache_directory + "/data_muzeel_pakistan/" + update_file_path, "w") as update_file:
+            with open(self.cache_directory + "/" + "muzeel" + "/" + update_file_path, "w") as update_file:
                 update_file.write(self.data_map[request_url]["updated"])
 

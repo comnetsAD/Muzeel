@@ -9,15 +9,11 @@ import pickle
 import time
 from urllib.parse import urlparse
 import typing
+import sys
 
-# search for match in DB
-# connection = pymysql.connect(host='127.0.0.1',
-#                              user='russel',
-#                              port=9092,
-#                              password='Comnets@2020',
-#                              db='deadcode',
-#                              autocommit=True)
-
+sys.path.append("..")
+from config import db_details
+sys.path.append(".")
 
 requests = {}
 
@@ -31,11 +27,11 @@ class CacheProxy:
 
     def load(self, loader):
         loader.add_option(name = "dbHost", typespec = str, default = "127.0.0.1", help = "Provide the host for the cache db, use dbHost")
-        loader.add_option(name = "dbPort", typespec = int, default= 9922, help = "Provide port for the cache db, use dbPort")
-        loader.add_option(name="dbName", typespec = str, default = "clonedSites", help = "Provide the db name, use dbName")
-        loader.add_option(name = "dbUser", typespec = str, default = "root", help = "Provide the user for the cache db, use dbUser")
-        loader.add_option(name="dbPassword", typespec = str, default = "", help = "Provide the password for the cache db, use dbPassword")
-        loader.add_option(name="cacheDirectory", typespec = str, default="data/", help = "Provide the directory to cache the pages")
+        loader.add_option(name = "dbPort", typespec = int, default= db_details["port"], help = "Provide port for the cache db, use dbPort")
+        loader.add_option(name= "dbName", typespec = str, default = db_details["database"], help = "Provide the db name, use dbName")
+        loader.add_option(name = "dbUser", typespec = str, default = db_details["username"], help = "Provide the user for the cache db, use dbUser")
+        loader.add_option(name= "dbPassword", typespec = str, default = db_details["password"], help = "Provide the password for the cache db, use dbPassword")
+        loader.add_option(name= "cacheDirectory", typespec = str, default=db_details["cache_directory"]+"/data/", help = "Provide the directory to cache the pages")
 
     def running(self):
         self.connection = pymysql.connect(host=ctx.options.dbHost,
@@ -56,7 +52,7 @@ class CacheProxy:
         flow.initiatingUrl = None
         initiatingUrl = flow.request.headers["init_url"]
         del flow.request.headers["init_url"]
-        del flow.request.headers["solution"]c
+        del flow.request.headers["solution"]
         
         try:
             with self.connection.cursor() as cursor:
@@ -70,8 +66,6 @@ class CacheProxy:
 
         # return miss if not cache hit
         if not sql_response:
-            # if flow.runningTest:
-            #     flow.response = http.HTTPResponse.make (200,"",{"Content-Type": "text/html"})
             return
         else:
             print ("--------- CACHE HIT {} -----------".format(requestUrl))

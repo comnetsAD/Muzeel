@@ -13,21 +13,13 @@ from .event_handling.EventHandler import EventHandler
 from .event_handling.Event import Event
 from .event_handling.exceptions.InteractionBotException import InteractionBotException
 from .DOTFileBuilder import DOTFileBuilder
+import chromedriver_autoinstaller
+from selenium.common.exceptions import NoSuchWindowException, UnexpectedAlertPresentException, TimeoutException
 
+chromedriver_autoinstaller.install()
 
 class ChromeExecution:
-    """This is the main dce class. Run the execute function to run dce.
-    """
     def __init__(self, url: str, event_handler: EventHandler, output_file_directory: str = None, proxy_url: str = None, solution: str = "original"):
-        """Constructor
-
-        Args:
-            url (str): The url of the page to be dead code eliminated
-            event_handler (EventHandler): The event handler to used
-            output_file_directory (str, optional): Where you want the output to b
-            proxy_url (str, optional): [description]. Defaults to None.
-            solution (str, optional): [description]. Defaults to "original".
-        """
         self.url = url
         self.proxy_url = proxy_url
         self.output_file_directory = "screenshots" if output_file_directory is None else output_file_directory
@@ -57,7 +49,7 @@ class ChromeExecution:
         self.desired_capabilities = DesiredCapabilities.CHROME
         self.desired_capabilities['goog:loggingPrefs'] = { 'browser':'ALL' }
 
-        self.browser = webdriver.Chrome("/usr/bin/chromedriver", options=self.chrome_options, seleniumwire_options=seleniumwire_options, desired_capabilities=self.desired_capabilities)
+        self.browser = webdriver.Chrome(options=self.chrome_options, seleniumwire_options=seleniumwire_options, desired_capabilities=self.desired_capabilities)
         self.browser.request_interceptor = self.interceptor
         self.event_handler.set_browser(self.browser)
         self.dot_file_builder = DOTFileBuilder(self.output_file_directory)
@@ -65,21 +57,16 @@ class ChromeExecution:
         self.start_time = time.time()
 
     def set_default_chrome_options(self) -> None:
-        """Sets default chrome options, to see what's happening on the browser, comment out, the "--headless" line
-        """
+        # self.chrome_options.add_experimental_option("profile.default_content_setting_values.notifications", 2)
         mobile_emulation = { "deviceName": "iPhone X" }
         self.chrome_options.add_experimental_option("mobileEmulation", mobile_emulation)
         self.chrome_options.add_argument("--ignore-certificate-errors")
         self.chrome_options.add_argument("--no-sandbox")
         self.chrome_options.add_argument("--headless")
+        self.chrome_options.page_load_strategy = 'eager'
         self.chrome_options.add_argument("--user-data-dir={}".format(self.output_file_directory+"/chrome_data"))
 
     def determine_child_processes(self, process_id: int):
-        """Determines child processes, useful in closing extraneous chrome windows after a crashes
-
-        Args:
-            process_id (int): The process id of the parent process
-        """
         p = psutil.Process(process_id)
         return p.children(recursive=True)
 
@@ -88,11 +75,6 @@ class ChromeExecution:
             makedirs(output_directory)
 
     def interceptor(self, request):
-        """Interceptor used for selenium wire
-
-        Args:
-            request: A seleniumwire request
-        """
         request.headers['init_url'] = self.url
         request.headers['solution'] = self.solution
 
@@ -109,8 +91,9 @@ class ChromeExecution:
             with open(self.output_file_directory+"/chrome_data/Default/chrome_debug.log") as log_file:
                 self.logs = set(log_file.read().split("\n"))
             print(len(self.logs))
-        except:
-            pass
+        except FileNotFoundError as e:
+            print(e)
+        
     
     def get_local_storage_keys(self) -> None:
         functions_called = self.browser.execute_script( \
@@ -141,6 +124,8 @@ class ChromeExecution:
             url_loaded = BrowserInteractions.open_page(self.browser, self.url)
             BrowserInteractions.close_alert_accept(self.browser)
             return url_loaded
+        except TimeoutException as e:
+            raise e
         except:
             self.restart()
             self.open_page(url)
@@ -185,15 +170,6 @@ class ChromeExecution:
         self.trace_file.close()
 
     def persist_state(self, event_queue, event_list) -> None:
-        """This can be used to persist the current state after a crash
-
-        Args:
-            event_queue: The current event queue
-            event_list: The current event list
-        
-        Potential update:
-            One thing that should be added is the ability to restart after a crash from these persisted states.
-        """
         with open(self.output_file_directory+"/event_queue.json", "w") as event_queue_file:
             event_queue_file.write(dumps([event.serialize_full_event_trace() for event in event_queue]))
         
@@ -201,7 +177,10 @@ class ChromeExecution:
             event_list_file.write(dumps([event.serialize_event() for event in event_list]))
 
     def execute(self) -> Event:
-        self.url = self.open_page(self.url)
+        try:
+            self.url = self.open_page(self.url)
+        except TimeoutException as e:
+            raise e
         BrowserInteractions.scroll_to_bottom(self.browser)
         self.get_logs()
         html_document_util = HTMLDocumentUtil(self.browser)
@@ -218,13 +197,21 @@ class ChromeExecution:
             parent_event = event_queue.popleft()
 
             print("Parent", parent_event.xpath, parent_event.event_type)
-            self.event_handler.trigger_event(parent_event)
+            try:
+                self.event_handler.trigger_event(parent_event)
+            except InteractionBotException as e:
+                BrowserInteractions.close_alert_dismiss(self.browser)
+                continue
+
             self.get_logs()
             self.write_to_trace_file(parent_event.serialize_full_event_trace())
             # self.screenshot()
             alert_closed = BrowserInteractions.close_alert_dismiss(self.browser)
             if alert_closed:
-                self.open_page(self.url)
+                try:
+                    self.open_page(self.url)
+                except TimeoutException as e:
+                    raise e
                 self.dot_file_builder.add_node(parent_event.generate_full_dot_representation())
                 continue
 
@@ -244,12 +231,14 @@ class ChromeExecution:
                     
                 except InteractionBotException:
                     BrowserInteractions.close_alert_dismiss(self.browser)
+                except KeyboardInterrupt:
+                    print("SIGINT: Skipping Event")
                     
                 finally:
                     i -= 1
-                    # if time.time() - self.start_time > 3600:
-                    #    self.persist_state([parent_event] + list(event_queue), event_list)
-                    #    raise Exception("Timeout")
+                    if time.time() - self.start_time > 7200:
+                        self.persist_state([parent_event] + list(event_queue), event_list)
+                        raise Exception("Timeout")
 
             if not has_child:
                 self.dot_file_builder.add_node(parent_event.generate_full_dot_representation())

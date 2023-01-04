@@ -1,6 +1,4 @@
 class Event:
-    """Event class. This is a node of a tree.
-    """
     def __init__(self, event_type: str, xpath: str) -> None:
         self.event_type: str = event_type
         self.xpath: str = xpath
