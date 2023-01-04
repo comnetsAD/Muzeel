@@ -1,1 +1,0 @@
-{"module":{"openSid":"lazada\u005F0b474ad3735916f82eb5aa0aabf5d609","userId":null},"success":true,"errorCode":null,"retry":false,"repeated":false,"notSuccess":false}

@@ -9,7 +9,7 @@ fixed_error_log
 /*results*
 faulty_but_workable
 generate_faulty_but_workable.*
-.pyc
-.h
-.c
-.m
+*.pyc
+*.h
+*.c
+*.m

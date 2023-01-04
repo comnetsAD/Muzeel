@@ -1,7 +1,0 @@
-digraph eventGraph {
-"/html/body | baseEvent"->"/html/body | keyup"
-"/html/body | baseEvent"->"/html/body | mousedown"
-"/html/body | baseEvent"->"/html/body | mousedown"
-"/html/body | baseEvent"->"/html/body | keydown"
-"/html/body | baseEvent"->"(//button[@id='toggle'])[1] | click"->"(//nav[@id='mobile-menu'])[1] | click"
-}

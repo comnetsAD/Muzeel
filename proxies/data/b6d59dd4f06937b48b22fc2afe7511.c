@@ -1,1 +1,0 @@
-span.story-text img{height:auto!important}.mobile-respon .instagram-section article{height:475px!important}.most-engaging-listing{display:flex}span.story-text p:nth-of-type(1){font-weight:600}
