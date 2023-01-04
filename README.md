@@ -10,7 +10,8 @@ You can watch the presentation of Muzeel on this [video].
 
 Install MySQL and an easy GUI that will allow you to access the DB, e.g., phpMyAdmin (Ubuntu), or DBeaver (MacOS).
 
-Import the DB template into your MySQL under the DB name "muzeel". This should create a table called "cachedPages" with various columns.
+Import the DB template "templateDB.sql" into your MySQL under the DB name "muzeel". This 
+should create a table called "cachedPages" with various columns.
 
 ### Create the list of sites
 
