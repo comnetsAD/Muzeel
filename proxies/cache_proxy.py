@@ -94,7 +94,7 @@ class CacheProxy:
             if "Content-Length" in headers_dict:
                 headers_dict["Content-Length"] = str(len(temp_content))
 
-            flow.response = http.HTTPResponse.make (
+            flow.response = http.Response.make (
                 code,  # (optional) status code
                 temp_content,  # (optional) content
                 headers_dict)
@@ -113,7 +113,7 @@ class CacheProxy:
     def response(self, flow: http.HTTPFlow) -> None:
         # randomize filename
         name = flow.request.pretty_url.split("?")[0]
-        flow.response.headers["dbPassword"] = str(ctx.options.dbPassword)
+        # flow.response.headers["dbPassword"] = str(ctx.options.dbPassword)
         if flow.initiatingUrl:
             try:
                 with self.connection.cursor() as cursor:
