@@ -13,3 +13,4 @@ generate_faulty_but_workable.*
 *.h
 *.c
 *.m
+*.u
