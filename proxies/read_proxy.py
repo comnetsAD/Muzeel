@@ -78,8 +78,8 @@ class ReadProxy:
         # return miss if not cache hit
         if not sql_response:
             print ("--------- CACHE MISS {} -----------".format(requestUrl))
-            # flow.response = http.HTTPResponse.make (200,"",{"Content-Type": "text/html"})
-            # flow.initiatingUrl = False
+            # flow.response = http.Response.make (200,"",{"Content-Type": "text/html"})
+            # flow.initiatingUrl = False 
             return
         else:
             print ("--------- CACHE HIT {} -----------".format(requestUrl))
@@ -118,7 +118,7 @@ class ReadProxy:
             if "Content-Length" in headers_dict:
                 headers_dict["Content-Length"] = str(len(temp_content))
 
-            flow.response = http.HTTPResponse.make (
+            flow.response = http.Response.make (
                 code,  # (optional) status code
                 temp_content,  # (optional) content
                 headers_dict)
